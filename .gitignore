@@ -1,0 +1,108 @@
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.vcxproj.filters.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.opendb
+
+# Build outputs (Visual C++)
+[Bb]in/
+[Bb]uild*/
+[Bb]uild/
+[Oo]bj/
+Debug*/
+Release*/
+x64/
+x86/
+arm*/
+ipch/
+*.ilk
+*.pdb
+*.idb
+*.exp
+*.lib
+*.obj
+*.o
+*.lo
+*.a
+
+# MSBuild / VS generated
+Generated\ Files/
+*_i.c
+*_p.c
+*.lastbuildstate
+*.tlog/
+*.lastbuild.csproj
+
+# CMake (optional - safe to ignore if someone uses CMake locally)
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+CMakeLists.txt.user
+CMakeLists.txt.user.*
+
+# vcpkg / package managers
+vcpkg_installed/
+vcpkg/
+packages/
+.nuget/
+*.nupkg
+project.lock.json
+
+# NuGet
+packages/
+
+# Build systems / IDEs
+.build/
+out/
+dist/
+.gradle/
+.idea/
+*.iml
+.vscode/
+*.code-workspace
+
+# Temp / backup / swap files
+*~
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.orig
+*.rej
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+*.db
+*.db-journal
+
+# Test, coverage, profiling
+TestResults/
+coverage/
+*.gcda
+*.gcno
+*.prof
+
+# Generated precompiled headers / caches
+*.gch
+*.pch
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archives
+*.7z
+*.zip
+*.tar.gz
+*.rar
