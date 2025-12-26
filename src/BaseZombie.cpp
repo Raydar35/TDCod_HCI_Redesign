@@ -1,9 +1,6 @@
 #include "BaseZombie.h"
 #include <iostream>
 #include <cmath>
-#include <algorithm>
-#include "ExplosionProvider.hpp"
-#include "Guts.hpp"
 
 BaseZombie::BaseZombie(float x, float y, float health, float attackDamage, float speed, float attackRange, float attackCooldown)
     : Entity(EntityType::Enemy, Vec2(x, y), Vec2(50.f, 50.f), false, 1.0f, true),
@@ -96,50 +93,22 @@ void BaseZombie::draw(sf::RenderWindow& window) const {
         window.draw(sh);
     }
     temp.setPosition(interp);
-    // Draw the sprite normally
     window.draw(temp);
 
-    // Additive white overlay to simulate brightening:
-    // - subtle overlay while attacking
-    // - stronger overlay during active damage frames
-    if (attacking) {
-        sf::Sprite overlay = temp;
-        if (isInDamageWindow) {
-            // stronger white flash when damage can be dealt
-            overlay.setColor(sf::Color(255,255,255,220));
-            window.draw(overlay, sf::RenderStates(sf::BlendAdd));
-        } else {
-            // more subtle white glow during attack wind-up
-            overlay.setColor(sf::Color(255,255,255,60));
-            window.draw(overlay, sf::RenderStates(sf::BlendAdd));
-        }
-    }
-
     if (!dead) {
-        // Narrower health bar, darker background, positioned closer to the zombie (uses interpolated position)
-        float barWidth = 36.0f;
-        float barHeight = 6.0f;
-        float verticalOffset = 30.0f; // hover closer (smaller = closer)
-
-        float healthPercent = 1.0f;
-        if (maxHealth > 0.0f) healthPercent = health / maxHealth;
-        if (healthPercent < 0.0f) healthPercent = 0.0f;
-        if (healthPercent > 1.0f) healthPercent = 1.0f;
-
-        // Background (darker)
+        float barWidth = 50.0f;
+        float barHeight = 5.0f;
         sf::RectangleShape healthBarBackground;
         healthBarBackground.setSize(sf::Vector2f(barWidth, barHeight));
-        healthBarBackground.setFillColor(sf::Color(40, 40, 40, 220));
-        healthBarBackground.setOrigin(barWidth * 0.5f, barHeight * 0.5f);
-        healthBarBackground.setPosition(interp.x, interp.y - verticalOffset);
+        healthBarBackground.setFillColor(sf::Color(100, 100, 100, 150));
+        healthBarBackground.setPosition(body.position.x - barWidth / 2, body.position.y - 50);
 
-        // Foreground bar (centered within background)
         sf::RectangleShape healthBar;
+        float healthPercent = health / maxHealth;
+        if (healthPercent < 0) healthPercent = 0;
         healthBar.setSize(sf::Vector2f(barWidth * healthPercent, barHeight));
-        healthBar.setFillColor(sf::Color(200, 30, 30, 220));
-        // center the foreground by setting origin to half of its current width
-        healthBar.setOrigin((barWidth * healthPercent) * 0.5f, barHeight * 0.5f);
-        healthBar.setPosition(interp.x, interp.y - verticalOffset);
+        healthBar.setFillColor(sf::Color::Red);
+        healthBar.setPosition(body.position.x - barWidth / 2, body.position.y - 50);
 
         window.draw(healthBarBackground);
         window.draw(healthBar);
@@ -191,22 +160,6 @@ void BaseZombie::kill() {
         sprite.setColor(sf::Color(255,255,255,0));
         // ensure physics body no longer moves
         body.velocity = Vec2(0,0);
-        // Spawn blood explosion at death position
-        ExplosionProvider::getBig(Vec2(body.position.x, body.position.y), 0.0f);
-        ExplosionProvider::getBigFast(Vec2(body.position.x, body.position.y), 0.0f);
-    }
-}
-
-void BaseZombie::onHitByBullet(const Vec2& hitPos, const Vec2& bulletVelocity, int remainingPenetrations) {
-    // Use the actual hit position for effects so impact appears where the bullet hits
-    Vec2 origin(hitPos.x, hitPos.y);
-
-    // Spawn base hit effect at the impact point
-    ExplosionProvider::getHit(origin, std::atan2(bulletVelocity.y, bulletVelocity.x));
-
-    if (remainingPenetrations > 0) {
-        // on penetration spawn a through effect at the impact point
-        ExplosionProvider::getThrough(origin, std::atan2(bulletVelocity.y, bulletVelocity.x));
     }
 }
 
@@ -346,11 +299,6 @@ void BaseZombie::updateAnimation(float deltaTime) {
             setState(ZombieState::WALK);
         }
     }
-
-    // Reset damage window flag after updating animation state
-    if (isInDamageWindow) {
-        isInDamageWindow = false;
-    }
 }
 
 bool BaseZombie::hasDealtDamageInAttack() const {
@@ -407,16 +355,4 @@ void BaseZombie::resetForSpawn(float x, float y, float healthVal, float damageVa
     // Ensure animator is configured for walking and playing
     setState(ZombieState::WALK);
     prevPos = currPos = sf::Vector2f(x, y);
-}
-
-void BaseZombie::onPlayerDeath() {
-    // When the player dies, zombies should immediately stop attacking and moving.
-    attacking = false;
-    // Clear any attack animation and revert to idle/walk state but keep movement zero
-    animator.stop();
-    body.velocity = Vec2(0,0);
-    // Ensure they no longer perform attacks
-    m_hasDealtDamageInAttack = true;
-    // Keep sprite visible but idle
-    setState(ZombieState::WALK);
 }

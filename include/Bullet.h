@@ -22,18 +22,9 @@ public:
     void setRotationOffset(float off) { rotationOffset = off; }
     void setSpriteOffset(const sf::Vector2f& off) { spriteOffset = off; }
     void setTexture(const sf::Texture& tex) { Bullet::bulletTexture = tex; sprite.setTexture(Bullet::bulletTexture); sprite.setOrigin(Bullet::bulletTexture.getSize().x / 2.f, Bullet::bulletTexture.getSize().y / 2.f); }
-
-    // Expose remaining penetrations for collision handler
-    int getRemainingPenetrations() const { return remainingPenetrations; }
-
-    // allow global SFX control for hit / kill pools(percent 0..100, muted)
-    static void setGlobalSfxVolume(float percent);
-    static void setGlobalSfxMuted(bool muted);
-
 private:
     float damage;
     int remainingPenetrations;
-    int initialPenetrations; // store original max to detect first penetration
     // When a bullet penetrates an enemy, subsequent hits will deal this
     // fraction of the previous damage (e.g. 0.6 -> 60% damage after each penetration)
     float penetrationDamageMultiplier = 0.5f;

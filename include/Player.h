@@ -8,7 +8,7 @@
 #include <SFML/Audio.hpp>
 #include <vector>
 #include <array>
-#include "Animator.h"
+#include "include/Animator.h"
 
 enum class PlayerState {
     IDLE,
@@ -33,34 +33,34 @@ enum class FeetState {
 class Player : public Entity {
 public:
     Player(Vec2 position);
-
+    
     void update(float deltaTime, sf::RenderWindow& window, sf::Vector2u mapSize, sf::Vector2f worldMousePosition);
     void draw(sf::RenderWindow& window);
     void render(sf::RenderWindow& window);
     void attack();
     void takeDamage(float amount);
     void kill();
-
+    
     void setPosition(float x, float y);
     sf::Vector2f getPosition() const;
     // Return the physics body's position (accurate world position for AI targeting)
     sf::Vector2f getPhysicsPosition() const;
-
+    
     void sprint(bool isSprinting);
     bool isSprinting() const;
-
+    
     bool isAttacking() const;
     bool isDead() const;
 
     float getCurrentHealth() const;
     float getMaxHealth() const;
-
+    
     float getCurrentStamina() const;
     float getMaxStamina() const;
-
+    
     sf::FloatRect getAttackBounds() const;
     sf::Sprite& getSprite();
-
+    
     void applyKnockback(const sf::Vector2f& direction, float force);
 
     // Knockback state (short slow + physics impulse)
@@ -68,16 +68,14 @@ public:
     // Reduced duration so the slow effect from zombie hits feels shorter
     float knockbackDuration = 0.1f; // seconds
     float knockbackMoveMultiplier = 0.35f; // movement reduced while knocked
-
+    
     float getAttackDamage() const;
-    // Returns current weapon spread in degrees (includes base inaccuracy + recoil)
-    float getCurrentSpreadDeg() const;
-
+    
     sf::FloatRect getHitbox() const;
     sf::FloatRect getAttackHitbox() const;
-
+    
     void reset();
-
+    
     WeaponType getCurrentWeapon() const { return currentWeapon; }
     void setWeapon(WeaponType weapon);
     void shoot(const sf::Vector2f& target, PhysicsWorld& physicsWorld, std::vector<std::unique_ptr<Bullet>>& bullets);
@@ -90,12 +88,6 @@ public:
     bool isReloading() const { return reloading; }
     int getCurrentAmmo() const { return currentAmmo; }
     int getMagazineSize() const { return magazineSize; }
-    // Per-weapon ammo accessors (current rounds in magazine)
-    int getPistolAmmoInMag() const { return pistolAmmoInMag; }
-    int getRifleAmmoInMag() const { return rifleAmmoInMag; }
-    // Per-weapon magazine capacities
-    int getPistolMagCapacity() const { return 12; }
-    int getRifleMagCapacity() const { return 30; }
 
     float timeSinceLastShot = 0.0f;
     float fireCooldown = 0.0f; // Time (in seconds) between shots
@@ -112,7 +104,7 @@ public:
     void setFeetStateSheet(FeetState state, const sf::Texture& sheetTexture, const std::vector<sf::IntRect>& frames, float frameTime);
 
     // Upper body sheets per weapon (idle, move, shoot, reload)
-    void setUpperWeaponSheet(WeaponType weapon, const std::array<const sf::Texture*, 4>& sheets, const std::vector<std::vector<sf::IntRect>>& framesByState, const std::array<float, 4>& frameTimes);
+    void setUpperWeaponSheet(WeaponType weapon, const std::array<const sf::Texture*,4>& sheets, const std::vector<std::vector<sf::IntRect>>& framesByState, const std::array<float,4>& frameTimes);
 
     // Alignment offsets (tweak these to adjust origins/positioning)
     // feetOffset is applied to feet sprite position relative to body position
@@ -145,13 +137,6 @@ public:
     // Reload sound setters
     void setPistolReloadSoundBuffer(const sf::SoundBuffer& buf);
     void setRifleReloadSoundBuffer(const sf::SoundBuffer& buf);
-
-    // Master SFX control (applies to all player-related sound effects)
-    // percent: 0..100
-    void setMasterSfxVolume(float percent);
-    void setMasterSfxMuted(bool muted);
-    float getMasterSfxVolume() const;
-    bool isMasterSfxMuted() const;
 
     // Footstep sound state
     std::vector<sf::SoundBuffer> stepBuffers;
@@ -200,17 +185,16 @@ private:
     void setState(PlayerState newState);
     void updateStamina(float deltaTime);
     void cancelReload();
-    void applyMasterSfxVolume();
 
     // helper to set feet state
     void setFeetStateInternal(FeetState newState);
-
+    
     // Upper body sprite + feet sprite (draw feet first)
     sf::Sprite sprite; // upper body
     sf::Sprite feetSprite; // feet layer
 
     PlayerState currentState;
-
+    
     float speed;
     float sprintSpeed;
     float rotationSpeed;
@@ -222,11 +206,11 @@ private:
     float upperTiltScale = 0.06f; // scale applied to signed movement angle to compute tilt
     // current smoothed tilt value (degrees)
     float upperTiltCurrent = 0.0f;
-
+    
     float health;
     float maxHealth;
-
-    float healthRegenRate = 10.0f;
+    
+    float healthRegenRate = 5.0f;
     float timeSinceLastDamage = 0.0f;
     const float HEALTH_REGEN_DELAY = 5.0f;
 
@@ -237,17 +221,17 @@ private:
     float staminaRegenDelay;
     float timeSinceStaminaUse;
     bool isStaminaRegenerating;
-
+    
     int currentFrame;
     float animationTimer;
     float animationFrameTime;
-
+    
     bool attacking;
     int currentAttackFrame;
     float attackTimer;
     float attackFrameTime;
     sf::FloatRect attackBounds;
-
+    
     float timeSinceLastMeleeAttack = 0.0f;
     float meleeAttackCooldown = 0.8f;
 
@@ -255,7 +239,7 @@ private:
     int currentDeathFrame;
     float deathTimer;
     float deathFrameTime;
-
+    
     // Current weapon
     WeaponType currentWeapon;
 
@@ -265,19 +249,19 @@ private:
     std::vector<sf::Texture> deathTextures;
 
     // Feet sprite-sheet support: per-state texture+frames
-    std::array<const sf::Texture*, 5> feetStateTextures = { nullptr,nullptr,nullptr,nullptr,nullptr };
+    std::array<const sf::Texture*,5> feetStateTextures = {nullptr,nullptr,nullptr,nullptr,nullptr};
     std::vector<std::vector<sf::IntRect>> feetFramesByState; // index by FeetState
-    std::array<float, 5> feetFrameTimes = { 0.1f,0.03f,0.03f,0.03f,0.03f };
+    std::array<float,5> feetFrameTimes = {0.1f,0.03f,0.03f,0.03f,0.03f};
     FeetState currentFeetState = FeetState::IDLE;
 
     // Upper body sprite-sheet support for pistol and rifle: states: 0=idle,1=move,2=shoot,3=reload
-    std::array<const sf::Texture*, 4> pistolUpperSheets = { nullptr,nullptr,nullptr,nullptr };
+    std::array<const sf::Texture*,4> pistolUpperSheets = {nullptr,nullptr,nullptr,nullptr};
     std::vector<std::vector<sf::IntRect>> pistolUpperFramesByState; // 4 states
-    std::array<float, 4> pistolUpperFrameTimes = { 0.1f,0.1f,0.05f,0.05f };
+    std::array<float,4> pistolUpperFrameTimes = {0.1f,0.1f,0.05f,0.05f};
 
-    std::array<const sf::Texture*, 4> rifleUpperSheets = { nullptr,nullptr,nullptr,nullptr };
+    std::array<const sf::Texture*,4> rifleUpperSheets = {nullptr,nullptr,nullptr,nullptr};
     std::vector<std::vector<sf::IntRect>> rifleUpperFramesByState; // 4 states
-    std::array<float, 4> rifleUpperFrameTimes = { 0.1f,0.1f,0.04f,0.08f };
+    std::array<float,4> rifleUpperFrameTimes = {0.1f,0.1f,0.04f,0.08f};
 
     bool upperShooting = false;
 
@@ -326,19 +310,6 @@ private:
     std::vector<sf::Sound> rifleSoundPool;
     size_t pistolSoundIndex = 0;
     size_t rifleSoundIndex = 0;
-
-    // volumes baseline (used to apply master SFX multiplier)
-    float basePistolAttackVolume = 70.f;
-    float basePistolPoolVolume = 50.f;
-    float baseRifleAttackVolume = 70.f;
-    float baseRiflePoolVolume = 100.f;
-    float baseWalkingVolume = 100.f;
-    float baseStepInstanceVolume = 80.f;
-    float baseReloadVolume = 100.f;
-
-    // Master SFX control (0..100). Default 100 (no change).
-    float masterSfxVolume = 100.f;
-    bool masterSfxMuted = false;
 
     // Ammo / reload
     int magazineSize = 0;

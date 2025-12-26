@@ -1,6 +1,4 @@
 #include "PhysicsWorld.h"
-#include "Bullet.h"
-#include "BaseZombie.h"
 #include <cmath>
 #include <iostream>
 
@@ -90,27 +88,6 @@ void PhysicsWorld::resolveCollisions() {
                 if (!a->isTrigger && !b->isTrigger) {
                     resolveDynamicCollision(*a, *b);
                 }
-                Entity* ea = a->owner;
-                Entity* eb = b->owner;
-
-                // Attempt to detect Bullet vs BaseZombie pair
-                // Use RTTI via dynamic_cast to avoid coupling headers here beyond forward declarations.
-                Bullet* bullet = dynamic_cast<Bullet*>(ea);
-                BaseZombie* zb = dynamic_cast<BaseZombie*>(eb);
-                if (!bullet || !zb) {
-                    bullet = dynamic_cast<Bullet*>(eb);
-                    zb = dynamic_cast<BaseZombie*>(ea);
-                }
-
-                if (bullet && zb) {
-                    // Compute hit position and pass bullet velocity
-                    Vec2 hitPos = bullet->getBody().position;
-                    Vec2 bvel = bullet->getBody().velocity;
-                    int rem = bullet->getRemainingPenetrations();
-                    zb->onHitByBullet(hitPos, bvel, rem);
-                }
-
-                // Now perform existing collision callbacks for game logic
                 handleCollision(a->owner, b->owner);
             }
         }

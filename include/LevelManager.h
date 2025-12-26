@@ -59,7 +59,6 @@ public:
     void loadLevel(int levelNumber);
     int getCurrentLevel() const;
     int getCurrentRound() const;
-    void restartCurrentRound(const sf::Vector2f& playerPos);
     int getTotalRoundsForLevel(int level) const;
     
     void spawnZombies(int count, sf::Vector2f playerPos);
@@ -95,29 +94,11 @@ public:
     void setCameraViewRect(const sf::FloatRect& viewRect);
     // Shadow support: set a texture that will be assigned to spawned zombies
     void setShadowTexture(const sf::Texture& tex) { shadowTexture = &tex; }
-    // HUD weapon icons (set by Game when loading assets)
-    void setPistolIcon(const sf::Texture& tex) { pistolIcon = &tex; }
-    void setRifleIcon(const sf::Texture& tex) { rifleIcon = &tex; }
-    // Optional key icons for HUD equip buttons (setters below)
-    void setKeyIcon1(const sf::Texture& tex);
-    void setKeyIcon2(const sf::Texture& tex);
-	void setKeyIconEsc(const sf::Texture& tex);
-    // Tally textures for rounds (0..4)
-    const sf::Texture* tallyTextures[5] = { nullptr, nullptr, nullptr, nullptr, nullptr };
-    void setTallyTexture(int index, const sf::Texture& tex) { if (index >= 0 && index < 5) tallyTextures[index] = &tex; }
-    // Per-icon scale multipliers (1.0 = fit to panel). Setters provided to tune different icon artwork sizes.
-    void setPistolIconScale(float s) { pistolIconScale = s; }
-    void setRifleIconScale(float s) { rifleIconScale = s; }
-    // Per-weapon per-panel scales: allows tuning pistol/rifle sizes separately when shown in the top or bottom panel
-    void setPistolTopScale(float s) { pistolTopScale = s; }
-    void setPistolBottomScale(float s) { pistolBottomScale = s; }
-    void setRifleTopScale(float s) { rifleTopScale = s; }
-    void setRifleBottomScale(float s) { rifleBottomScale = s; }
+    // Load per-round configs from a simple CSV-like file. See TDCod/Config/rounds.cfg for format.
+    void loadConfigs(const std::string& path);
 
     // Debug helpers
     void setDebugLogging(bool enabled) { debugLogging = enabled; }
-    // Notify active zombies that the player has died so they can stop attacking/moving
-    void notifyPlayerDeath();
     int getActiveZombieCount() const { return static_cast<int>(zombies.size()); }
     int getQueuedZombieCount() const { return static_cast<int>(zombiesToSpawn.size()); }
     bool getDebugLogging() const { return debugLogging; }
@@ -135,9 +116,7 @@ private:
     std::vector<std::string> tutorialDialogs;
     int currentDialogIndex;
     sf::Text dialogText;
-    sf::Font font4;
-    sf::Font font2;
-    sf::Font font3;
+    sf::Font font;
     sf::RectangleShape dialogBox;
     bool showingDialog;
 
@@ -180,7 +159,6 @@ private:
     
     float roundTransitionTimer;
     bool inRoundTransition;
-    float roundTransitionDuration = 2.2f; // total duration: move + hold + return
     
     float levelTransitionTimer;
     float levelTransitionDuration;
@@ -203,40 +181,21 @@ private:
     // Current camera view rect used when computing spawn positions
     sf::FloatRect cameraViewRect = sf::FloatRect(0.f, 0.f, 800.f, 600.f);
     const sf::Texture* shadowTexture = nullptr;
-    const sf::Texture* pistolIcon = nullptr;
-    const sf::Texture* rifleIcon = nullptr;
-    const sf::Texture* keyIcon1 = nullptr;
-    const sf::Texture* keyIcon2 = nullptr;
-    const sf::Texture* keyIconEsc = nullptr;
-    int lastTallyIndex = -1; // previous round index used for cross-fade animation
-    float pistolIconScale = 1.5f; // legacy/global multiplier
-    float rifleIconScale = 3.3f;  // legacy/global multiplier
-    // Per-panel per-weapon multipliers (1.0 = fit to panel). These control icon size when shown in top/bottom panels.
-    float pistolTopScale = 1.3f;
-    float pistolBottomScale = 1.3f;
-    float rifleTopScale = 2.6f;
-    float rifleBottomScale = 2.8f;
+    // Weapon equip request: when a round starts LevelManager can request the Player
+    // to equip a specific weapon. This is set inside spawnZombies and applied in
+    // the next update() call where a Player reference is available.
+    //WeaponType startingWeaponForRound = WeaponType::PISTOL;
+    //bool equipWeaponPending = false;
+    // Previously we forced weapon equips at round start; now we only ensure the
+    // player starts the tutorial with the pistol once. This flag prevents
+    // repeatedly re-equipping the player while allowing them to swap during
+    // the tutorial via input.
     bool tutorialWeaponForced = false;
     
     // Debugging
     bool debugLogging = false;
 
-    // Health damage flash: when player loses health show the missing portion as red briefly
-    float prevFrameHealthPercent = 1.0f; // health percent observed previous frame
-    float damageFlashStartPercent = 1.0f; // percent before damage
-    float damageFlashRemaining = 0.0f; // seconds left for flash
-    float damageFlashDuration = 0.8f; // total duration of red flash
-    // Hold time before the flash begins shrinking
-    float damageFlashHold = 0.45f; // seconds to hold full red before shrinking
-    float damageFlashHoldRemaining = 0.0f; // remaining hold time
-    
 public:
-    bool isRequireEscToAdvanceDialog() const {
-        if (currentDialogIndex < 0) return false;
-        if (currentDialogIndex >= static_cast<int>(tutorialDialogs.size())) return false;
-        const std::string token = "----";
-        return tutorialDialogs[currentDialogIndex].find(token) != std::string::npos;
-    }
     bool isLevelTransitionPending() const { return pendingLevelTransition; }
     void clearLevelTransitionPending() { pendingLevelTransition = false; }
     bool isLevelTransitioning() const { return levelTransitioning; }

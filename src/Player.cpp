@@ -270,6 +270,10 @@ void Player::update(float deltaTime, sf::RenderWindow& window, sf::Vector2u mapS
     // Provide legacy alias 'angle' for any remaining code expecting that name
     float angle = moveAngle;
 
+    // Compute rotation towards mouse using physics body as origin.
+    // If the mouse is within a circular dead zone around the origin with radius equal to
+    // the distance from origin to muzzle, skip rotation. This prevents the player from
+    // trying to rotate toward positions that lie between origin and muzzle.
     sf::Vector2f toMouse = worldMousePosition - bodyPos;
     float toMouseLen = std::sqrt(toMouse.x*toMouse.x + toMouse.y*toMouse.y);
     if (toMouseLen > 1e-4f) {
@@ -281,6 +285,10 @@ void Player::update(float deltaTime, sf::RenderWindow& window, sf::Vector2u mapS
         // Compute aim direction from origin to mouse (unit)
         sf::Vector2f aimDir = toMouse / toMouseLen;
 
+        // We'll search numerically for a sprite rotation (in radians) such that a forward
+        // ray emitted from the muzzle (which depends on sprite rotation) passes through the mouse.
+        // This is robust to rotationOffset and arbitrary local offsets.
+        // Prepare local offsets consistent with getMuzzlePosition (no extra scale applied here)
         sf::Vector2f localOffset(0.f, 0.f);
         if (currentWeapon == WeaponType::PISTOL) localOffset = muzzleOffsetPistol;
         else if (currentWeapon == WeaponType::RIFLE) localOffset = muzzleOffsetRifle;
@@ -552,29 +560,6 @@ void Player::shoot(const sf::Vector2f& target, PhysicsWorld& physicsWorld, std::
         }
     }
 
-    // Prevent shooting when target is inside the deadzone (too close to player origin)
-    {
-        sf::Vector2f bodyPos(body.position.x, body.position.y);
-        sf::Vector2f toTarget = target - bodyPos;
-        float toTargetLen = std::sqrt(toTarget.x*toTarget.x + toTarget.y*toTarget.y);
-        // compute candidate muzzle position assuming facing directly at target
-        float baseAngle = std::atan2(toTarget.y, toTarget.x);
-        sf::Vector2f face(std::cos(baseAngle), std::sin(baseAngle));
-        sf::Vector2f rightPerp(-face.y, face.x);
-        sf::Vector2f localOffset(0.f, 0.f);
-        float forwardOffset = 0.f, lateralOffset = 0.f;
-        if (currentWeapon == WeaponType::PISTOL) { localOffset = muzzleOffsetPistol; forwardOffset = muzzleForwardPistol; lateralOffset = muzzleLateralPistol; }
-        else if (currentWeapon == WeaponType::RIFLE) { localOffset = muzzleOffsetRifle; forwardOffset = muzzleForwardRifle; lateralOffset = muzzleLateralRifle; }
-        sf::Vector2f muzzleCandidate;
-        if (localOffset.x != 0.f || localOffset.y != 0.f) muzzleCandidate = bodyPos + face * localOffset.x + rightPerp * localOffset.y;
-        else muzzleCandidate = bodyPos + face * forwardOffset + rightPerp * lateralOffset;
-        float originToMuzzleDist = std::sqrt((muzzleCandidate.x - bodyPos.x)*(muzzleCandidate.x - bodyPos.x) + (muzzleCandidate.y - bodyPos.y)*(muzzleCandidate.y - bodyPos.y));
-        if (toTargetLen < originToMuzzleDist && originToMuzzleDist > 1e-6f) {
-            // inside deadzone: cannot shoot
-            return;
-        }
-    }
-
     // Weapon parameters (defaults)
     float bulletDamage = 20.f;
     float bulletSpeed = 1200.f;
@@ -642,21 +627,9 @@ void Player::shoot(const sf::Vector2f& target, PhysicsWorld& physicsWorld, std::
 
     // Sounds
     if (currentWeapon == WeaponType::PISTOL) {
-        if (!pistolSoundPool.empty()) {
-            // Change pitch when pistol ammo is low (below 3)
-            float pitch = (currentAmmo < 3) ? 1.05f : 1.0f;
-            pistolSoundPool[pistolSoundIndex].setPitch(pitch);
-            pistolSoundPool[pistolSoundIndex].play();
-            pistolSoundIndex = (pistolSoundIndex + 1) % pistolSoundPool.size();
-        }
+        if (!pistolSoundPool.empty()) { pistolSoundPool[pistolSoundIndex].play(); pistolSoundIndex = (pistolSoundIndex + 1) % pistolSoundPool.size(); }
     } else if (currentWeapon == WeaponType::RIFLE) {
-        if (!rifleSoundPool.empty()) {
-            // Change pitch when rifle ammo is low (below 8)
-            float pitch = (currentAmmo < 8) ? 1.05f : 1.0f;
-            rifleSoundPool[rifleSoundIndex].setPitch(pitch);
-            rifleSoundPool[rifleSoundIndex].play();
-            rifleSoundIndex = (rifleSoundIndex + 1) % rifleSoundPool.size();
-        }
+        if (!rifleSoundPool.empty()) { rifleSoundPool[rifleSoundIndex].play(); rifleSoundIndex = (rifleSoundIndex + 1) % rifleSoundPool.size(); }
     }
 
     // Upper animation
@@ -849,16 +822,6 @@ float Player::getAttackDamage() const {
     return 25.0f;
 }
 
-float Player::getCurrentSpreadDeg() const {
-    float inaccuracyDeg = recoil; // include recoil
-    if (currentWeapon == WeaponType::PISTOL) {
-        inaccuracyDeg += (aiming ? baseInaccuracyAimedPistol : baseInaccuracyHipPistol);
-    } else if (currentWeapon == WeaponType::RIFLE) {
-        inaccuracyDeg += (aiming ? baseInaccuracyAimedRifle : baseInaccuracyHipRifle);
-    }
-    return inaccuracyDeg;
-}
-
 // Player hitbox centered on physics body
 sf::FloatRect Player::getHitbox() const {
     const float desiredW = 50.0f;
@@ -897,27 +860,6 @@ void Player::reset() {
     currentFeetState = FeetState::IDLE;
     feetAnimator.stop();
     upperAnimator.stop();
-    // Restore entity alive state and owner so PhysicsWorld sees this body as valid again
-    this->alive = true;
-    this->getBody().owner = this;
-    // Clear movement/impulse state so player isn't slowed after reset
-    knockbackTimer = 0.0f;
-    knockbackMoveMultiplier = 0.35f;
-    sprinting = false;
-    desiredSprint = false;
-    reloading = false;
-    reloadTimer = 0.0f;
-    recoil = 0.0f;
-    timeSinceLastShot = 0.0f;
-    // reset physics velocity
-    body.velocity = Vec2(0.f, 0.f);
-    // clear external impulse as well so no lingering forces remain
-    body.externalImpulse = Vec2(0.f, 0.f);
-    // restore ammo for current weapon
-    if (currentWeapon == WeaponType::PISTOL) currentAmmo = std::clamp(pistolAmmoInMag, 0, magazineSize);
-    else if (currentWeapon == WeaponType::RIFLE) currentAmmo = std::clamp(rifleAmmoInMag, 0, magazineSize);
-    // clear muzzle flashes
-    activeMuzzles.clear();
     syncSpriteWithBody();
 }
 
@@ -957,8 +899,6 @@ void Player::setWeapon(WeaponType weapon) {
 }
 
 void Player::render(sf::RenderWindow& window) {
-    // If the entity was destroyed (owner cleared), skip rendering completely
-    if (!isAlive()) return;
     // interpolate position
     sf::Vector2f interp = prevPos + (currPos - prevPos) * renderAlpha;
     sprite.setPosition(interp.x, interp.y);
@@ -1085,21 +1025,6 @@ void Player::kill() {
     feetAnimator.stop();
     upperAnimator.stop();
     setState(PlayerState::DEATH);
-    // Clear any transient movement modifiers so they don't remain after death
-    knockbackTimer = 0.0f;
-    // restore default multiplier (ensure consistent value)
-    knockbackMoveMultiplier = 0.35f;
-    // zero velocity so body won't carry momentum when re-added
-    body.velocity = Vec2(0.f, 0.f);
-    // clear external impulse as well (prevents residual forces from lingering)
-    body.externalImpulse = Vec2(0.f, 0.f);
-
-    // Mark entity as destroyed so physics body is unregistered by PhysicsWorld cleanup
-    this->destroy();
-}
-
-bool Player::isDead() const {
-    return dead;
 }
 
 void Player::syncSpriteWithBody() {
@@ -1115,21 +1040,21 @@ void Player::loadTextures() {
 void Player::setPistolSoundBuffer(const sf::SoundBuffer& buf) {
     pistolAttackBuffer = buf;
     pistolAttackSound.setBuffer(pistolAttackBuffer);
+    pistolAttackSound.setVolume(100);
     pistolSoundIndex = 0;
     pistolSoundPool.clear();
     pistolSoundPool.resize(6);
-    for (auto& s : pistolSoundPool) { s.setBuffer(pistolAttackBuffer); }
-    applyMasterSfxVolume();
+    for (auto& s : pistolSoundPool) { s.setBuffer(pistolAttackBuffer); s.setVolume(50); }
 }
 
 void Player::setRifleSoundBuffer(const sf::SoundBuffer& buf) {
     rifleAttackBuffer = buf;
     rifleAttackSound.setBuffer(rifleAttackBuffer);
+    rifleAttackSound.setVolume(100);
     rifleSoundIndex = 0;
     rifleSoundPool.clear();
     rifleSoundPool.resize(6);
-    for (auto& s : rifleSoundPool) { s.setBuffer(rifleAttackBuffer); s.setAttenuation(0.f); s.setRelativeToListener(true); s.setMinDistance(1.f); }
-    applyMasterSfxVolume();
+    for (auto& s : rifleSoundPool) { s.setBuffer(rifleAttackBuffer); s.setVolume(100); s.setAttenuation(0.f); s.setRelativeToListener(true); s.setMinDistance(1.f); }
 }
 
 // Walking sound
@@ -1137,7 +1062,7 @@ void Player::setWalkingSoundBuffer(const sf::SoundBuffer& buf) {
     walkingBuffer = buf;
     walkingSound.setBuffer(walkingBuffer);
     walkingSound.setLoop(true);
-    applyMasterSfxVolume();
+    walkingSound.setVolume(90);
 }
 
 void Player::setStepSoundBuffers(const std::vector<sf::SoundBuffer>& bufs) {
@@ -1148,66 +1073,28 @@ void Player::setStepSoundBuffers(const std::vector<sf::SoundBuffer>& bufs) {
     stepSoundInstances.resize(poolSize);
     for (size_t i = 0; i < poolSize; ++i) {
         if (!stepBuffers.empty()) stepSoundInstances[i].setBuffer(stepBuffers[i % stepBuffers.size()]);
+        stepSoundInstances[i].setVolume(80);
     }
     stepTimer = 0.0f;
     stepIndex = 0;
     lastStepInstance = 0;
-    applyMasterSfxVolume();
 }
 
 // --- Missing method implementations (linker fixes) ---
 void Player::setPistolReloadSoundBuffer(const sf::SoundBuffer& buf) {
     pistolReloadBuffer = buf;
     pistolReloadSound.setBuffer(pistolReloadBuffer);
+    pistolReloadSound.setVolume(100);
     pistolReloadSound.setAttenuation(0.f);
     pistolReloadSound.setRelativeToListener(true);
-    applyMasterSfxVolume();
 }
 
 void Player::setRifleReloadSoundBuffer(const sf::SoundBuffer& buf) {
     rifleReloadBuffer = buf;
     rifleReloadSound.setBuffer(rifleReloadBuffer);
+    rifleReloadSound.setVolume(100);
     rifleReloadSound.setAttenuation(0.f);
     rifleReloadSound.setRelativeToListener(true);
-    applyMasterSfxVolume();
-}
-
-// --- New: master SFX control implementation ---
-// percent: 0..100
-void Player::setMasterSfxVolume(float percent) {
-    masterSfxVolume = std::clamp(percent, 0.0f, 100.0f);
-    applyMasterSfxVolume();
-}
-
-void Player::setMasterSfxMuted(bool muted) {
-    masterSfxMuted = muted;
-    applyMasterSfxVolume();
-}
-
-float Player::getMasterSfxVolume() const {
-    return masterSfxVolume;
-}
-
-bool Player::isMasterSfxMuted() const {
-    return masterSfxMuted;
-}
-
-// Helper to apply master multiplier to all player-managed sounds.
-// Called whenever base volumes or master volume/mute state change.
-void Player::applyMasterSfxVolume() {
-    float mul = masterSfxMuted ? 0.0f : (masterSfxVolume / 100.0f);
-
-    // single-instance sounds
-    pistolAttackSound.setVolume(basePistolAttackVolume * mul);
-    rifleAttackSound.setVolume(baseRifleAttackVolume * mul);
-    walkingSound.setVolume(baseWalkingVolume * mul);
-    pistolReloadSound.setVolume(baseReloadVolume * mul);
-    rifleReloadSound.setVolume(baseReloadVolume * mul);
-
-    // pool sounds
-    for (auto& s : pistolSoundPool) s.setVolume(basePistolPoolVolume * mul);
-    for (auto& s : rifleSoundPool) s.setVolume(baseRiflePoolVolume * mul);
-    for (auto& s : stepSoundInstances) s.setVolume(baseStepInstanceVolume * mul);
 }
 
 void Player::setState(PlayerState newState) {
@@ -1235,8 +1122,4 @@ void Player::setState(PlayerState newState) {
         default:
             break;
     }
-}
-
-sf::Sprite& Player::getSprite() {
-    return sprite;
 }

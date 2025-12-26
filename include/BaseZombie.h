@@ -5,7 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
-#include "Animator.h"
+#include "include/Animator.h"
 
 enum class ZombieState {
     WALK,
@@ -38,11 +38,7 @@ public:
 
     virtual void attack();
     virtual void takeDamage(float amount);
-    // Called when hit by a bullet so the zombie can spawn effects (blood, guts, explosions)
-    virtual void onHitByBullet(const Vec2& hitPos, const Vec2& bulletVelocity, int remainingPenetrations);
     virtual void kill();
-    // Called when the player dies so zombies can stop attacking/moving
-    void onPlayerDeath();
 
     // Prepare this zombie to be reused from a pool. Sets position, health, damage and speed
     void resetForSpawn(float x, float y, float healthVal, float damageVal, float speedVal);
@@ -126,9 +122,6 @@ protected:
     virtual bool isMovementLocked() const { return false; }
 
     bool m_hasDealtDamageInAttack;
-
-    // Set by derived classes during attack animation to indicate the active damage frames.
-    bool isInDamageWindow = false;
 
     void loadTextureSet(std::vector<sf::Texture>& textures, const std::string& basePath,
         const std::string& prefix, int count, bool isBoss = false);

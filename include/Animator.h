@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <functional>
-#include <cmath>
 
 // Lightweight animator supporting either per-frame textures or a single spritesheet + rects.
 class Animator {

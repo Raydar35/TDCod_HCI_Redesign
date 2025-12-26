@@ -40,7 +40,7 @@ ZombieWalker::ZombieWalker(float x, float y, float health, float attackDamage, f
 
 void ZombieWalker::loadTextures() {
     // load a single sheet instead of per-frame files
-    if (walkSheetTexture.loadFromFile("assets/ZombieWalker/zombie_move.png")) {
+    if (walkSheetTexture.loadFromFile("TDCod/Assets/ZombieWalker/zombie_move.png")) {
         hasWalkSheet = true;
         int frameW = 228; int frameH = 311; // set your frame size
         sf::Vector2u ts = walkSheetTexture.getSize();
@@ -52,7 +52,7 @@ void ZombieWalker::loadTextures() {
             walkRects.emplace_back(c*frameW, r*frameH, frameW, frameH);
     }
 
-    if (attackSheetTexture.loadFromFile("assets/ZombieWalker/zombie_attack.png")) {
+    if (attackSheetTexture.loadFromFile("TDCod/Assets/ZombieWalker/zombie_attack.png")) {
         hasAttackSheet = true;
         int frameW = 318; int frameH = 294; // set your frame size
         sf::Vector2u ts = attackSheetTexture.getSize();
@@ -106,11 +106,6 @@ void ZombieWalker::updateAnimation(float deltaTime) {
 
         // reset damage flag when attack starts (frame 0)
         if (animator.getCurrentFrameIndex() == 0) this->damageDealtThisAttack = false;
-        // update BaseZombie flag indicating whether this frame is part of damage window
-        bool inWindow = false;
-        int cf = static_cast<int>(animator.getCurrentFrameIndex());
-        for (int f : damageFrames) if (cf == f) { inWindow = true; break; }
-        this->isInDamageWindow = inWindow;
     }
 
     if (this->lunging) {
