@@ -20,7 +20,7 @@ public:
     PhysicsBody& getBody();
     const PhysicsBody& getBody() const;
     EntityType getType() const;
-    virtual bool isAlive() const; // made virtual so derived classes can override
+    bool isAlive() const;
     void destroy();
 
 protected:

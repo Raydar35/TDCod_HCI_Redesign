@@ -1,5 +1,5 @@
-#ifndef CUTSCENE_H
-#define CUTSCENE_H
+#ifndef TDCOD_CUTSCENE_H
+#define TDCOD_CUTSCENE_H
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -33,24 +33,14 @@ private:
 
     // Member variables for cutscene state, assets, etc.
     sf::Font font;
-    sf::Font font2;
     sf::Font dialogueDisplayFont; // Font for dialogue text
     sf::Text titleText;
     sf::Text startButtonText;
-    sf::Text controlsButtonText; // new Controls button
-    sf::Text settingsButtonText; // new Settings button
-    sf::Text exitButtonText; // new exit button
     sf::Text dialogueText;
     sf::Text skipPromptText;
-    sf::Text controlsText; // content for controls overlay
-    sf::Text backButtonText; // Back button inside controls panel
 
     sf::RectangleShape titleBorder;
     sf::RectangleShape startButtonBorder;
-    sf::RectangleShape controlsButtonBorder; // border for controls button
-    sf::RectangleShape settingsButtonBorder; // border for settings button
-    sf::RectangleShape exitButtonBorder; // border for exit button
-    sf::RectangleShape backButtonBorder; // border for back button inside controls
     sf::RectangleShape dialogueBox;
     sf::RectangleShape fadeRect;
 
@@ -90,10 +80,7 @@ private:
     bool isMenuState; // To differentiate between menu and actual cutscene
     bool dialogueActive;
     bool currentLineComplete; // For dialogue progression
-    bool showingControls = false; // whether the controls overlay is visible
-    bool backWasHovering = false; // track hover for back button
-    bool showingSettings = false; // whether the settings overlay is visible
-
+    
     float fadeAlpha;
     float fadeDuration;
     bool startFading;
@@ -103,27 +90,8 @@ private:
     float currentShipSpeed;
 
     sf::View cameraView;
-
-    // icon assets for controls panel
-    std::vector<sf::Texture> iconTextures;
-    std::vector<sf::Sprite> iconSprites;
-
-    // dedicated back-button icon
-    sf::Texture backIconTexture;
-    sf::Sprite backIconSprite;
-    // Audio settings
-    float masterVolume = 100.f;
-    float musicVolume = 80.f;
-    float sfxVolume = 85.f;
-    bool masterMuted = false;
-    bool musicMuted = false;
-    bool sfxMuted = false;
-    int draggingSlider = -1; // 0=master,1=music,2=sfx
-
-    // Apply current audio settings to music/sfx
-    void applyAudioSettings();
 };
 
 } // namespace TDCod
 
-#endif // CUTSCENE_H
+#endif // TDCOD_CUTSCENE_H
