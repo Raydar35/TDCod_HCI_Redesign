@@ -38,7 +38,7 @@ Game::Game()
     background.setFillColor(sf::Color(50, 50, 50));
     background.setSize(sf::Vector2f(2048.f, 2048.f)); // Set to map size (pixels)
 
-    if (!mapTexture1.loadFromFile("TDCod/Assets/Map/ground1.jpg")) {
+    if (!mapTexture1.loadFromFile("assets/Map/ground1.jpg")) {
         std::cerr << "Error loading map1 texture!" << std::endl;
     } else {
         // This texture is a single tile (512x512). Enable repeating and
@@ -48,8 +48,8 @@ Game::Game()
         mapSprite1.setTextureRect(sf::IntRect(0, 0, 2048, 2048));
     }
     
-    if (!font.loadFromFile("TDCod/Assets/Call of Ops Duty.otf")) {
-        std::cerr << "Error loading font 'TDCod/Assets/Call of Ops Duty.otf'! Trying fallback." << std::endl;
+    if (!font.loadFromFile("assets/Call of Ops Duty.otf")) {
+        std::cerr << "Error loading font 'assets/Call of Ops Duty.otf'! Trying fallback." << std::endl;
     }
     
     pointsText.setFont(font);
@@ -71,31 +71,31 @@ Game::Game()
         player.setPosition(static_cast<float>(mapSize.x) / 2.0f, static_cast<float>(mapSize.y) / 2.0f);
     }
 
-    if (!backgroundMusic.openFromFile("TDCod/Assets/Audio/atmosphere.mp3")) {
-        std::cerr << "Error loading background music! Path: TDCod/Assets/Audio/atmosphere.mp3" << std::endl;
+    if (!backgroundMusic.openFromFile("assets/Audio/atmosphere.mp3")) {
+        std::cerr << "Error loading background music! Path: assets/Audio/atmosphere.mp3" << std::endl;
     } else {
         backgroundMusic.setVolume(15);
     }
 
-    if (!zombieBiteBuffer.loadFromFile("TDCod/Assets/Audio/zombie_bite.mp3")) {
+    if (!zombieBiteBuffer.loadFromFile("assets/Audio/zombie_bite.mp3")) {
         std::cerr << "Error loading zombie bite sound!" << std::endl;
     } else {
         zombieBiteSound.setBuffer(zombieBiteBuffer);
     }
 
-    if (!Bullet::bulletTexture.loadFromFile("TDCod/Assets/Top_Down_Survivor/bullet.png")) {
+    if (!Bullet::bulletTexture.loadFromFile("assets/Top_Down_Survivor/bullet.png")) {
         std::cerr << "Failed to load bullet texture!" << std::endl;
     }
 
     // Load muzzle flash texture (provide your own path here)
-    if (!muzzleFlashTexture.loadFromFile("TDCod/Assets/Top_Down_Survivor/muzzle_flash.png")) {
+    if (!muzzleFlashTexture.loadFromFile("assets/Top_Down_Survivor/muzzle_flash.png")) {
         std::cerr << "Could not load muzzle flash texture (placeholder path)" << std::endl;
     } else {
         player.setMuzzleTexture(muzzleFlashTexture);
     }
 
     // Load shadow texture and pass to player and LevelManager
-    if (!shadowTexture.loadFromFile("TDCod/Assets/shadow.png")) {
+    if (!shadowTexture.loadFromFile("assets/shadow.png")) {
         std::cerr << "Warning: could not load shadow texture" << std::endl;
     } else {
         player.setShadowTexture(shadowTexture);
@@ -104,18 +104,18 @@ Game::Game()
 
     // Load weapon and walking sounds here and pass to Player
     sf::SoundBuffer pistolBuf, rifleBuf, pistolReloadBuf, rifleReloadBuf;
-    if (!pistolBuf.loadFromFile("TDCod/Assets/Audio/pistol_shot.mp3")) {
+    if (!pistolBuf.loadFromFile("assets/Audio/pistol_shot.mp3")) {
         std::cerr << "Warning: could not load pistol sound" << std::endl;
     } else player.setPistolSoundBuffer(pistolBuf);
-    if (!rifleBuf.loadFromFile("TDCod/Assets/Audio/rifle_shot.mp3")) {
+    if (!rifleBuf.loadFromFile("assets/Audio/rifle_shot.mp3")) {
         std::cerr << "Warning: could not load rifle sound" << std::endl;
     } else player.setRifleSoundBuffer(rifleBuf);
 
     // Load two footstep sounds and pass to player (alternate between them)
     {
         std::array<std::string,2> stepPaths = {
-            "TDCod/Assets/Audio/steps/step1.mp3",
-            "TDCod/Assets/Audio/steps/step2.mp3"
+            "assets/Audio/steps/step1.mp3",
+            "assets/Audio/steps/step2.mp3"
         };
 
         std::vector<sf::SoundBuffer> stepBufs;
@@ -134,22 +134,22 @@ Game::Game()
     }
 
     // Reload sounds for weapons
-    if (!pistolReloadBuf.loadFromFile("TDCod/Assets/Audio/pistol_reload.mp3")) {
+    if (!pistolReloadBuf.loadFromFile("assets/Audio/pistol_reload.mp3")) {
         std::cerr << "Warning: could not load pistol reload sound" << std::endl;
     } else player.setPistolReloadSoundBuffer(pistolReloadBuf);
 
-    if (!rifleReloadBuf.loadFromFile("TDCod/Assets/Audio/rifle_reload.wav")) {
+    if (!rifleReloadBuf.loadFromFile("assets/Audio/rifle_reload.wav")) {
         std::cerr << "Warning: could not load rifle reload sound" << std::endl;
     } else player.setRifleReloadSoundBuffer(rifleReloadBuf);
     
     // --- New: attempt to load five separate feet spritesheet and configure frames ---
     // Placeholder paths -- replace with real ones.
     std::array<std::string,5> feetPaths = {
-        "TDCod/Assets/Top_Down_Survivor/feet_idle.png",
-        "TDCod/Assets/Top_Down_Survivor/feet_walk.png",
-        "TDCod/Assets/Top_Down_Survivor/feet_run.png",
-        "TDCod/Assets/Top_Down_Survivor/feet_strafe_left.png",
-        "TDCod/Assets/Top_Down_Survivor/feet_strafe_right.png"
+        "assets/Top_Down_Survivor/feet_idle.png",
+        "assets/Top_Down_Survivor/feet_walk.png",
+        "assets/Top_Down_Survivor/feet_run.png",
+        "assets/Top_Down_Survivor/feet_strafe_left.png",
+        "assets/Top_Down_Survivor/feet_strafe_right.png"
     };
 
     // Example frame sizes (update to your real sizes)
@@ -194,16 +194,16 @@ Game::Game()
 
     // --- New: load upper sheets per weapon (pistol and rifle), each has 4 sheets: idle, move, shoot, reload ---
     std::array<std::string,4> pistolPaths = {
-        "TDCod/Assets/Top_Down_Survivor/hunter_pistol_idle.png",
-        "TDCod/Assets/Top_Down_Survivor/hunter_pistol_move.png",
-        "TDCod/Assets/Top_Down_Survivor/hunter_pistol_shoot.png",
-        "TDCod/Assets/Top_Down_Survivor/hunter_pistol_reload.png"
+        "assets/Top_Down_Survivor/hunter_pistol_idle.png",
+        "assets/Top_Down_Survivor/hunter_pistol_move.png",
+        "assets/Top_Down_Survivor/hunter_pistol_shoot.png",
+        "assets/Top_Down_Survivor/hunter_pistol_reload.png"
     };
     std::array<std::string,4> riflePaths = {
-        "TDCod/Assets/Top_Down_Survivor/hunter_rifle_idle.png",
-        "TDCod/Assets/Top_Down_Survivor/hunter_rifle_move.png",
-        "TDCod/Assets/Top_Down_Survivor/hunter_rifle_shoot.png",
-        "TDCod/Assets/Top_Down_Survivor/hunter_rifle_reload.png"
+        "assets/Top_Down_Survivor/hunter_rifle_idle.png",
+        "assets/Top_Down_Survivor/hunter_rifle_move.png",
+        "assets/Top_Down_Survivor/hunter_rifle_shoot.png",
+        "assets/Top_Down_Survivor/hunter_rifle_reload.png"
     };
 
     std::array<float,4> pistolTimes = {0.1f, 0.1f, 0.05f, 0.08f};

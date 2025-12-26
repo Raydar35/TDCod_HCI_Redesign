@@ -5,7 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
-#include "include/Animator.h"
+#include "Animator.h"
 
 enum class ZombieState {
     WALK,

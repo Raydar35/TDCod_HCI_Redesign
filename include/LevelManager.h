@@ -94,8 +94,6 @@ public:
     void setCameraViewRect(const sf::FloatRect& viewRect);
     // Shadow support: set a texture that will be assigned to spawned zombies
     void setShadowTexture(const sf::Texture& tex) { shadowTexture = &tex; }
-    // Load per-round configs from a simple CSV-like file. See TDCod/Config/rounds.cfg for format.
-    void loadConfigs(const std::string& path);
 
     // Debug helpers
     void setDebugLogging(bool enabled) { debugLogging = enabled; }

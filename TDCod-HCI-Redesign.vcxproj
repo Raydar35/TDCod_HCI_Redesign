@@ -142,10 +142,7 @@
     <ClCompile Include="src\BaseZombie.cpp" />
     <ClCompile Include="src\Bullet.cpp" />
     <ClCompile Include="src\Entity.cpp" />
-    <ClCompile Include="src\Explosion.cpp" />
-    <ClCompile Include="src\ExplosionProvider.cpp" />
     <ClCompile Include="src\Game.cpp" />
-    <ClCompile Include="src\Guts.cpp" />
     <ClCompile Include="src\LevelManager.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\PhysicsBody.cpp" />
@@ -161,10 +158,7 @@
     <ClInclude Include="include\Bullet.h" />
     <ClInclude Include="include\Cutscene.h" />
     <ClInclude Include="include\Entity.h" />
-    <ClInclude Include="include\Explosion.hpp" />
-    <ClInclude Include="include\ExplosionProvider.hpp" />
     <ClInclude Include="include\Game.h" />
-    <ClInclude Include="include\Guts.hpp" />
     <ClInclude Include="include\LevelManager.h" />
     <ClInclude Include="include\PhysicsBody.h" />
     <ClInclude Include="include\PhysicsWorld.h" />

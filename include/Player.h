@@ -8,7 +8,7 @@
 #include <SFML/Audio.hpp>
 #include <vector>
 #include <array>
-#include "include/Animator.h"
+#include "Animator.h"
 
 enum class PlayerState {
     IDLE,

@@ -67,47 +67,47 @@ Cutscene::~Cutscene() {
 
 void Cutscene::init() {
     // Load assets
-    if (!font.loadFromFile("TDCod/Assets/Call of Ops Duty.otf")) {
+    if (!font.loadFromFile("assets/Call of Ops Duty.otf")) {
         std::cerr << "Error loading font TDCod/Assets/Call of Ops Duty.otf" << std::endl;
         // Handle error appropriately, maybe set cutsceneFinished = true
     }
-    if (!backgroundTexture.loadFromFile("TDCod/Scene/Assets2/Space Background.png")) {
+    if (!backgroundTexture.loadFromFile("assets/scene/Space Background.png")) {
         std::cerr << "Error loading texture TDCod/Scene/Assets2/Space Background.png" << std::endl;
     }
     backgroundSprite.setTexture(backgroundTexture);
 
-    if (!planetTexture.loadFromFile("TDCod/Scene/Assets2/planet.png")) {
-        std::cerr << "Error loading texture TDCod/Scene/Assets2/planet.png" << std::endl;
+    if (!planetTexture.loadFromFile("assets/scene/planet.png")) {
+        std::cerr << "Error loading texture assets/scene/planet.png" << std::endl;
     }
     planetSprite.setTexture(planetTexture);
 
-    if (!shipMoveTexture.loadFromFile("TDCod/Scene/Assets2/Corvette/Move.png")) {
-        std::cerr << "Error loading texture TDCod/Scene/Assets2/Corvette/Move.png" << std::endl;
+    if (!shipMoveTexture.loadFromFile("assets/scene/Corvette/Move.png")) {
+        std::cerr << "Error loading texture assets/scene/Corvette/Move.png" << std::endl;
     }
-    if (!shipIdleTexture.loadFromFile("TDCod/Scene/Assets2/Corvette/Idle.png")) {
-        std::cerr << "Error loading texture TDCod/Scene/Assets2/Corvette/Idle.png" << std::endl;
+    if (!shipIdleTexture.loadFromFile("assets/scene/Corvette/Idle.png")) {
+        std::cerr << "Error loading texture assets/scene/Corvette/Idle.png" << std::endl;
     }
     shipSprite.setTexture(shipIdleTexture); // Initial texture
 
-    if (!menuButtonBuffer.loadFromFile("TDCod/Scene/Assets2/menubutton.mp3")) {
-        std::cerr << "Error loading sound TDCod/Scene/Assets2/menubutton.mp3" << std::endl;
+    if (!menuButtonBuffer.loadFromFile("assets/scene/menubutton.mp3")) {
+        std::cerr << "Error loading sound assets/scene/menubutton.mp3" << std::endl;
     }
     menuButtonSound.setBuffer(menuButtonBuffer);
 
-    if (!menuClickBuffer.loadFromFile("TDCod/Scene/Assets2/menuclick.mp3")) {
-        std::cerr << "Error loading sound TDCod/Scene/Assets2/menuclick.mp3" << std::endl;
+    if (!menuClickBuffer.loadFromFile("assets/scene/menuclick.mp3")) {
+        std::cerr << "Error loading sound assets/scene/menuclick.mp3" << std::endl;
     }
     menuClickSound.setBuffer(menuClickBuffer);
 
     // Load menu music
-    if (!backgroundMusic.openFromFile("TDCod/Scene/Assets2/01 - Damned.mp3")) {
-        std::cerr << "Error loading menu music TDCod/Scene/Assets2/01 - Damned.mp3" << std::endl;
+    if (!backgroundMusic.openFromFile("assets/scene/01 - Damned.mp3")) {
+        std::cerr << "Error loading menu music assets/scene/01 - Damned.mp3" << std::endl;
     }
     backgroundMusic.setLoop(true);
 
     // Load cutscene music
-    if (!cutsceneMusic.openFromFile("TDCod/Scene/Assets2/cutscene.mp3")) {
-        std::cerr << "Error loading cutscene music TDCod/Scene/Assets2/cutscene.mp3" << std::endl;
+    if (!cutsceneMusic.openFromFile("assets/scene/cutscene.mp3")) {
+        std::cerr << "Error loading cutscene music assets/scene/cutscene.mp3" << std::endl;
     }
     cutsceneMusic.setLoop(false); // Cutscene music usually doesn't loop
 
