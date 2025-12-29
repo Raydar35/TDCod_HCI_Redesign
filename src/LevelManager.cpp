@@ -1446,9 +1446,9 @@ void LevelManager::initializeDefaultConfigs() {
     tutorialConfig.animSpeed = 0.12f;
 
     // Round configs (5 rounds)
-    roundConfigs[0].count = 50; roundConfigs[0].health = 40.0f; roundConfigs[0].damage = 18.0f; roundConfigs[0].speed = 80.0f; roundConfigs[0].animSpeed = 0.11f;
-    roundConfigs[1].count = 1; roundConfigs[1].health = 40.0f; roundConfigs[1].damage = 20.0f; roundConfigs[1].speed = 90.0f; roundConfigs[1].animSpeed = 0.10f;
+    roundConfigs[0].count = 20; roundConfigs[0].health = 40.0f; roundConfigs[0].damage = 18.0f; roundConfigs[0].speed = 80.0f; roundConfigs[0].animSpeed = 0.11f;
+    roundConfigs[1].count = 50; roundConfigs[1].health = 40.0f; roundConfigs[1].damage = 20.0f; roundConfigs[1].speed = 90.0f; roundConfigs[1].animSpeed = 0.10f;
     roundConfigs[2].count = 1; roundConfigs[2].health = 40.0f; roundConfigs[2].damage = 22.0f; roundConfigs[2].speed = 92.0f; roundConfigs[2].animSpeed = 0.095f;
     roundConfigs[3].count = 1; roundConfigs[3].health = 50.0f; roundConfigs[3].damage = 25.0f; roundConfigs[3].speed = 95.0f; roundConfigs[3].animSpeed = 0.09f;
-    roundConfigs[4].count = 1; roundConfigs[4].health = 60.0f; roundConfigs[4].damage = 30.0f; roundConfigs[4].speed = 100.0f; roundConfigs[4].animSpeed = 0.085f;
+    roundConfigs[4].count = 100; roundConfigs[4].health = 60.0f; roundConfigs[4].damage = 30.0f; roundConfigs[4].speed = 100.0f; roundConfigs[4].animSpeed = 0.085f;
 }
