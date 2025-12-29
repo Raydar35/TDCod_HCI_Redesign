@@ -66,7 +66,7 @@ Original repo: [GitHub link](https://github.com/Huginho8/TDCod)
 - **[HCI Redesign](https://www.youtube.com/watch?v=VIDEO_ID&t=2m48s)**
 
 ### Screenshot
-![UI Redesign Screenshot](docs\images\TDCod-HCI-Redesign-Thumbnail.png)
+![UI Redesign Screenshot](docs/images/TDCod-HCI-Redesign-Thumbnail.png)
 
 ---
 
