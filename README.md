@@ -61,9 +61,9 @@ Original repo: [GitHub link](https://github.com/Huginho8/TDCod)
 ## Video Showcase
 
 *Single video showcasing the progression of the game across the three iterations.*
-- **[Baseline Game](https://youtu.be/VIDEO_ID?t=0)**
-- **[Foundation Overhaul](https://youtu.be/VIDEO_ID?t=90)**
-- **[HCI Redesign](https://youtu.be/VIDEO_ID?t=168)**
+- **[Baseline Game](https://youtu.be/ON2zllJmwXU&t=0)**
+- **[Foundation Overhaul](https://youtu.be/ON2zllJmwXU&t=90)**
+- **[HCI Redesign](https://youtu.be/ON2zllJmwXU&t=168)**
 
 ### Screenshot
 ![UI Redesign Screenshot](docs/images/TDCod-HCI-Redesign-Thumbnail.png)
