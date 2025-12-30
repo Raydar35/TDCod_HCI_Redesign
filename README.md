@@ -6,16 +6,12 @@ This project is a redesign of a baseline game orginally created in collaboration
 
 Original repo: [GitHub link](https://github.com/Huginho8/TDCod)
 
----
-
 ## Technologies
 
 - C++
 - SFML
 - Visual Studio
 - GitHub
-
----
 
 ## Features
 
@@ -41,8 +37,6 @@ Original repo: [GitHub link](https://github.com/Huginho8/TDCod)
 **UI & HUD Redesign**
 - Redesigned UI and HUD to improve readability, information hierarchy, and player feedback.
 
----
-
 ## Running the Game
 
 ### Prerequisites
@@ -56,8 +50,6 @@ Original repo: [GitHub link](https://github.com/Huginho8/TDCod)
 2. Set up SFML
 3. Build and run the project
 
----
-
 ## Video Showcase
 
 *Single video showcasing the progression of the game across the three iterations.*
@@ -67,8 +59,6 @@ Original repo: [GitHub link](https://github.com/Huginho8/TDCod)
 
 ### Screenshot
 ![UI Redesign Screenshot](docs/images/TDCod-HCI-Redesign-Thumbnail.png)
-
----
 
 ## HCI Redesign and Usability Evaluation
 
