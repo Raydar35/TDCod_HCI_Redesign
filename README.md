@@ -2,7 +2,7 @@
 
 This is a top-down 2D zombie shooter game made in C++ using SFML. The game is the combined result of a 2D game development course, and later, Human-Centered Computing course.
 
-This project is a redesign of a baseline game orginally created in collaboration with two other students. Building on that foundation, I first updated the game to a more playable version, and then redesigned the UI and HUD to preform usability testing and evaluation.
+This project is a redesign of a baseline game orginally created in collaboration with two other students. Building on that foundation, I first updated the game to a more playable version, and then redesigned the UI and HUD to perform usability testing and evaluation.
 
 Original repo: [GitHub link](https://github.com/Huginho8/TDCod)
 
@@ -15,26 +15,26 @@ Original repo: [GitHub link](https://github.com/Huginho8/TDCod)
 
 ## Features
 
-**Gameplay Mechanics**
+#### Gameplay Mechanics
 - Player movement, sprinting, aiming, shooting, reloading, weapon swapping.
 - Enemy behavior with player tracking and lunge attacks.
 - Wave-based round system that structures progression, pacing, and difficulty.
 
-**Physics and Collisions**
+#### Physics and Collisions
 - Custom 2D physics interactions between player, zombies, and bullets. 
 
-**Visual Effects**
+#### Visual Effects
 - Explosions and blood effects are implemented using a lightweight kinematic particle system.
 - Supports persistent trace effects (e.g. blood stains and explosion residue).
 
-**Animation System**
+#### Animation System
 - Frame based animations with state transistions and sprite rotation.
 
-**Menus**
+#### Menus
 - Main menu with transition into gameplay.
 - In-game pause menu providing access to audio settings and an in-game control reference panel.
 
-**UI & HUD Redesign**
+#### UI & HUD Redesign
 - Redesigned UI and HUD to improve readability, information hierarchy, and player feedback.
 
 ## Running the Game
